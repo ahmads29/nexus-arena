@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NEXUS OS - Floor Master v2.4 | Admin Command Center</title>
+<!-- Google Fonts & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Verbatim Tailwind Config from Design System -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "outline": "#af8783",
+            "brand-crimson": "#FF1E2D",
+            "surface-tint": "#ffb3ad",
+            "surface-container-highest": "#353534",
+            "surface-container-lowest": "#0e0e0e",
+            "surface-card": "#151515",
+            "primary-fixed": "#ffdad6",
+            "on-tertiary-container": "#00311f",
+            "inverse-surface": "#e5e2e1",
+            "surface-base": "#0D0D0D",
+            "on-tertiary-fixed-variant": "#005236",
+            "error": "#ffb4ab",
+            "brand-crimson-dark": "#8B0000",
+            "secondary": "#d0bcff",
+            "background": "#131313",
+            "secondary-fixed": "#e9ddff",
+            "on-secondary-fixed": "#23005c",
+            "on-tertiary": "#003824",
+            "on-secondary-fixed-variant": "#5516be",
+            "primary-fixed-dim": "#ffb3ad",
+            "secondary-container": "#571bc1",
+            "primary": "#ffb3ad",
+            "primary-container": "#ff544f",
+            "secondary-fixed-dim": "#d0bcff",
+            "tertiary": "#4edea3",
+            "outline-variant": "#5e3f3c",
+            "on-surface-variant": "#e9bcb8",
+            "surface-bright": "#393939",
+            "surface": "#131313",
+            "surface-container-low": "#1c1b1b",
+            "on-tertiary-fixed": "#002113",
+            "tertiary-container": "#00a572",
+            "error-container": "#93000a",
+            "surface-container": "#201f1f",
+            "status-maintenance": "#F59E0B",
+            "border-strong": "rgba(255, 255, 255, 0.16)",
+            "status-busy": "#EF4444",
+            "on-primary-container": "#5c0006",
+            "inverse-primary": "#c00019",
+            "surface-container-high": "#2a2a2a",
+            "on-surface": "#e5e2e1",
+            "status-reserved": "#8B5CF6",
+            "bg-canvas": "#080808",
+            "on-secondary": "#3c0091",
+            "on-error": "#690005",
+            "on-primary": "#680009",
+            "tertiary-fixed": "#6ffbbe",
+            "surface-elevated": "#1A1A1A",
+            "border-subtle": "rgba(255, 255, 255, 0.08)",
+            "on-secondary-container": "#c4abff",
+            "on-primary-fixed": "#410003",
+            "status-active": "#10B981",
+            "surface-dim": "#131313",
+            "inverse-on-surface": "#313030",
+            "surface-overlay": "#222222",
+            "on-background": "#e5e2e1",
+            "on-primary-fixed-variant": "#930011",
+            "tertiary-fixed-dim": "#4edea3",
+            "surface-variant": "#353534",
+            "on-error-container": "#ffdad6"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-md": "1rem",
+            "gutter": "1rem",
+            "space-xl": "2rem",
+            "margin-md": "1.5rem",
+            "space-xs": "0.25rem",
+            "space-2xl": "3rem",
+            "space-sm": "0.5rem",
+            "margin-lg": "2rem",
+            "gutter-lg": "1.5rem",
+            "margin": "1rem",
+            "space-lg": "1.5rem"
+          },
+          "fontFamily": {
+            "display-xl-mobile": ["Space Grotesk"],
+            "label-lg": ["Space Grotesk"],
+            "headline-md": ["Space Grotesk"],
+            "display-xl": ["Space Grotesk"],
+            "body-sm": ["Inter"],
+            "headline-lg-mobile": ["Space Grotesk"],
+            "headline-lg": ["Space Grotesk"],
+            "body-md": ["Inter"],
+            "label-sm": ["Space Grotesk"],
+            "headline-sm": ["Space Grotesk"],
+            "label-md": ["Space Grotesk"],
+            "telemetry-num": ["Space Grotesk"],
+            "body-lg": ["Inter"]
+          },
+          "fontSize": {
+            "display-xl-mobile": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+            "label-lg": ["14px", { "lineHeight": "18px", "fontWeight": "600" }],
+            "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+            "display-xl": ["48px", { "lineHeight": "56px", "fontWeight": "700" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+            "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+            "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "fontWeight": "700" }],
+            "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "600" }],
+            "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
+            "telemetry-num": ["28px", { "lineHeight": "32px", "fontWeight": "700" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Surgical Razor & Glassmorphism Tokens */
+    .glow-active {
+      box-shadow: 0 0 24px -4px rgba(255, 30, 45, 0.25), inset 0 1px 0 0 rgba(255, 30, 45, 0.4);
+    }
+    .glow-available {
+      box-shadow: 0 0 20px -4px rgba(16, 185, 129, 0.2), inset 0 1px 0 0 rgba(16, 185, 129, 0.3);
+    }
+    .glow-crimson-btn {
+      box-shadow: 0 0 16px rgba(255, 30, 45, 0.4);
+    }
+    .surface-top-edge {
+      background-image: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%);
+    }
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #080808;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 2px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #FF1E2D;
+    }
+  </style>
+</head>
+<body class="bg-bg-canvas text-on-surface font-body-md text-body-md antialiased overflow-hidden select-none h-screen flex flex-col">
+<!-- TOP LEVEL WRAPPER: SIDEBAR + MAIN WORKSTATION CANVAS -->
+<div class="flex flex-1 overflow-hidden">
+<!-- 1. LEFT NAVIGATION SIDEBAR (Admin Navigation Component Anchor) -->
+<aside class="w-64 h-full bg-surface-base border-r border-border-subtle flex flex-col justify-between p-space-md z-30 shrink-0">
+<!-- Top Branding & Status -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between pb-space-sm border-b border-border-subtle">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-surface-card border border-border-subtle flex items-center justify-center text-brand-crimson">
+<span class="material-symbols-outlined text-headline-sm" data-icon="sports_esports" data-weight="fill" style="font-variation-settings: 'FILL' 1;">sports_esports</span>
+</div>
+<div>
+<div class="font-headline-sm text-headline-sm uppercase text-on-surface tracking-widest leading-none">NEXUS OS</div>
+<div class="font-label-sm text-label-sm text-on-surface/40 mt-1 flex items-center gap-1">
+<span>FLOOR MASTER v2.4</span>
+</div>
+</div>
+</div>
+<!-- Live pulse indicator -->
+<div class="flex items-center gap-1 bg-surface-elevated px-2 py-0.5 rounded border border-border-subtle">
+<span class="w-1.5 h-1.5 rounded-full bg-status-active animate-ping"></span>
+<span class="font-label-sm text-label-sm text-status-active uppercase tracking-wider">LIVE</span>
+</div>
+</div>
+<!-- Quick Primary CTA Button -->
+<button class="w-full py-2.5 px-space-md bg-brand-crimson hover:bg-brand-crimson-dark text-on-surface rounded font-label-md text-label-md uppercase tracking-wider transition-all duration-150 flex items-center justify-center gap-space-xs glow-crimson-btn active:scale-95">
+<span class="material-symbols-outlined text-label-lg" data-icon="add">add</span>
+<span>New Walk-In Session</span>
+</button>
+<!-- Navigation Tab Cluster (Exact Shared Components Data Mapping) -->
+<nav class="flex flex-col gap-1 overflow-y-auto max-h-[calc(100vh-380px)] pr-1">
+<!-- Item 1: Dashboard (ACTIVE MATCH) -->
+<a class="flex items-center justify-between px-space-md py-space-sm bg-surface-elevated text-brand-crimson border-l-2 border-brand-crimson rounded-r transition-all duration-150 active:scale-[0.99]" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-headline-sm" data-icon="dashboard" data-weight="fill" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-sm text-label-sm tracking-wide">Dashboard</span>
+</div>
+<span class="w-1.5 h-1.5 rounded-full bg-brand-crimson"></span>
+</a>
+<!-- Item 2: Live Stations -->
+<a class="flex items-center justify-between px-space-md py-space-sm text-on-surface/60 hover:text-on-surface hover:bg-surface-card rounded transition-all duration-150 active:scale-[0.99]" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-headline-sm" data-icon="desktop_windows">desktop_windows</span>
+<span class="font-label-sm text-label-sm tracking-wide">Live Stations</span>
+</div>
+<span class="font-label-sm text-label-sm px-1.5 py-0.2 bg-surface-elevated text-on-surface/50 rounded">38</span>
+</a>
+<!-- Item 3: PlayStation -->
+<a class="flex items-center justify-between px-space-md py-space-sm text-on-surface/60 hover:text-on-surface hover:bg-surface-card rounded transition-all duration-150 active:scale-[0.99]" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-headline-sm" data-icon="sports_esports">sports_esports</span>
+<span class="font-label-sm text-label-sm tracking-wide">PlayStation</span>
+</div>
+<span class="font-label-sm text-label-sm px-1.5 py-0.2 bg-surface-elevated text-status-active rounded">4/6</span>
+</a>
+<!-- Item 4: Reservations -->
+<a class="flex items-center justify-between px-space-md py-space-sm text-on-surface/60 hover:text-on-surface hover:bg-surface-card rounded transition-all duration-150 active:scale-[0.99]" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-headline-sm" data-icon="calendar_month">calendar_month</span>
+<span class="font-label-sm text-label-sm tracking-wide">Reservations</span>
+</div>
+<span class="font-label-sm text-label-sm px-1.5 py-0.2 bg-status-reserved/20 text-status-reserved rounded">2</span>
+</a>
+<!-- Item 5: POS Register -->
+<a class="flex items-center justify-between px-space-md py-space-sm text-on-surface/60 hover:text-on-surface hover:bg-surface-card rounded transition-all duration-150 active:scale-[0.99]" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-headline-sm" data-icon="point_of_sale">point_of_sale</span>
+<span class="font-label-sm text-label-sm tracking-wide">POS Register</span>
+</div>
+</a>
+<!-- Item 6: Inventory -->
+<a class="flex items-center justify-between px-space-md py-space-sm text-on-surface/60 hover:text-on-surface hover:bg-surface-card rounded transition-all duration-150 active:scale-[0.99]" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-headline-sm" data-icon="inventory_2">inventory_2</span>
+<span class="font-label-sm text-label-sm tracking-wide">Inventory</span>
+</div>
+</a>
+<!-- Item 7: Products -->
+<a class="flex items-center justify-between px-space-md py-space-sm text-on-surface/60 hover:text-on-surface hover:bg-surface-card rounded transition-all duration-150 active:scale-[0.99]" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-headline-sm" data-icon="fastfood">fastfood</span>
+<span class="font-label-sm text-label-sm tracking-wide">Products</span>
+</div>
+</a>
+<!-- Item 8: Debts (With highlighted Outstanding Alert) -->
+<a class="flex items-center justify-between px-space-md py-space-sm text-on-surface/60 hover:text-on-surface hover:bg-surface-card rounded transition-all duration-150 active:scale-[0.99]" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-headline-sm" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-label-sm text-label-sm tracking-wide">Debts</span>
+</div>
+<span class="font-label-sm text-label-sm px-1.5 py-0.2 bg-brand-crimson/20 border border-brand-crimson/40 text-brand-crimson rounded font-bold tracking-tight">$325</span>
+</a>
+<!-- Item 9: Sales & Reports -->
+<a class="flex items-center justify-between px-space-md py-space-sm text-on-surface/60 hover:text-on-surface hover:bg-surface-card rounded transition-all duration-150 active:scale-[0.99]" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-headline-sm" data-icon="analytics">analytics</span>
+<span class="font-label-sm text-label-sm tracking-wide">Sales &amp; Reports</span>
+</div>
+</a>
+<!-- Item 10: Employees -->
+<a class="flex items-center justify-between px-space-md py-space-sm text-on-surface/60 hover:text-on-surface hover:bg-surface-card rounded transition-all duration-150 active:scale-[0.99]" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-headline-sm" data-icon="badge">badge</span>
+<span class="font-label-sm text-label-sm tracking-wide">Employees</span>
+</div>
+</a>
+<!-- Item 11: System Settings -->
+<a class="flex items-center justify-between px-space-md py-space-sm text-on-surface/60 hover:text-on-surface hover:bg-surface-card rounded transition-all duration-150 active:scale-[0.99]" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-headline-sm" data-icon="settings">settings</span>
+<span class="font-label-sm text-label-sm tracking-wide">System Settings</span>
+</div>
+</a>
+</nav>
+</div>
+<!-- Bottom Staff & Drawer Status Module -->
+<div class="border-t border-border-subtle pt-space-md flex flex-col gap-space-sm">
+<!-- Cashier Terminal Card -->
+<div class="bg-surface-card border border-border-subtle p-2.5 rounded flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded bg-surface-elevated border border-border-subtle flex items-center justify-center text-on-surface/80">
+<span class="material-symbols-outlined text-headline-sm" data-icon="account_circle">account_circle</span>
+</div>
+<div class="leading-tight">
+<div class="font-label-md text-label-md text-on-surface">Ahmad S.</div>
+<div class="font-body-sm text-body-sm text-on-surface/40">Floor Lead • Shift: 04h 12m</div>
+</div>
+</div>
+<div class="text-right">
+<div class="font-label-sm text-label-sm text-on-surface/50 uppercase">Drawer</div>
+<div class="font-label-md text-label-md text-status-active font-bold">$482.00</div>
+</div>
+</div>
+<!-- Terminal Actions -->
+<div class="grid grid-cols-2 gap-1.5">
+<button class="flex items-center justify-center gap-1.5 py-1.5 px-2 bg-surface-card hover:bg-surface-elevated border border-border-subtle rounded text-on-surface/70 hover:text-on-surface text-label-sm font-label-sm transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="terminal">terminal</span>
+<span>Diagnostics</span>
+</button>
+<button class="flex items-center justify-center gap-1.5 py-1.5 px-2 bg-surface-card hover:bg-surface-elevated border border-border-subtle rounded text-brand-crimson/80 hover:text-brand-crimson text-label-sm font-label-sm transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="lock">lock</span>
+<span>Lock Terminal</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- CENTER & RIGHT: MASTER OPERATIONAL HUB -->
+<div class="flex-1 flex flex-col min-w-0 bg-bg-canvas overflow-hidden">
+<!-- 2. TOP OPERATIONAL TELEMETRY BAR -->
+<header class="h-16 bg-surface-base border-b border-border-subtle px-margin-lg flex items-center justify-between shrink-0 gap-space-md">
+<!-- Live Quick Search & Barcode Scanner Input -->
+<div class="flex items-center gap-space-sm w-96 relative">
+<div class="absolute left-3 text-on-surface/40 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-headline-sm" data-icon="search">search</span>
+</div>
+<input class="w-full h-10 pl-10 pr-10 bg-surface-card border border-border-subtle focus:border-brand-crimson rounded text-on-surface placeholder:text-on-surface/30 text-body-sm font-body-sm outline-none transition-all" placeholder="Search Station (e.g. PC-04), Gamer tag, or Scan Barcode..." type="text"/>
+<div class="absolute right-2.5 px-1.5 py-0.5 rounded bg-surface-elevated border border-border-subtle text-on-surface/40 text-[10px] font-mono flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="barcode_scanner">barcode_scanner</span>
+<span>SCAN</span>
+</div>
+</div>
+<!-- Telemetry Meters HUD -->
+<div class="flex items-center gap-space-lg divide-x divide-border-subtle">
+<!-- Metric 1: Revenue -->
+<div class="flex flex-col pl-space-md">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface/50">Today's Revenue</span>
+<div class="flex items-baseline gap-2">
+<span class="font-telemetry-num text-headline-md text-on-surface tracking-tight leading-tight">$1,248.50</span>
+<span class="font-label-sm text-label-sm text-status-active flex items-center font-semibold">
+<span class="material-symbols-outlined text-xs" data-icon="trending_up">trending_up</span>
+                +14.2%
+              </span>
+</div>
+</div>
+<!-- Metric 2: Floor Sessions & Occupancy -->
+<div class="flex flex-col pl-space-md">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface/50">Active Sessions</span>
+<div class="flex items-baseline gap-2">
+<span class="font-telemetry-num text-headline-md text-on-surface tracking-tight leading-tight">18 <span class="text-headline-sm text-on-surface/40 font-normal">/ 38</span></span>
+<span class="px-1.5 py-0.5 rounded bg-brand-crimson/15 text-brand-crimson border border-brand-crimson/30 font-label-sm text-label-sm font-bold">47% OCC</span>
+</div>
+</div>
+<!-- Metric 3: Fleet Breakdown -->
+<div class="flex flex-col pl-space-md">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface/50">Available Rigs</span>
+<div class="flex items-center gap-3 text-body-sm font-body-sm">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-status-active"></span>
+<span class="text-on-surface/90 font-label-sm text-label-sm">PC: <strong class="text-status-active">12 Free</strong></span>
+</div>
+<span class="text-on-surface/20">|</span>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-status-active"></span>
+<span class="text-on-surface/90 font-label-sm text-label-sm">PS5: <strong class="text-status-active">4 Free</strong></span>
+</div>
+</div>
+</div>
+<!-- Metric 4: Footfall -->
+<div class="flex flex-col pl-space-md hidden xl:flex">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface/50">Customers</span>
+<div class="flex items-baseline gap-1">
+<span class="font-telemetry-num text-headline-md text-on-surface tracking-tight leading-tight">87</span>
+<span class="font-body-sm text-body-sm text-on-surface/40">registered</span>
+</div>
+</div>
+<!-- Metric 5: Debts -->
+<div class="flex flex-col pl-space-md hidden 2xl:flex">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-brand-crimson flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="error">error</span>
+              Pending Debts
+            </span>
+<div class="flex items-baseline gap-1.5">
+<span class="font-telemetry-num text-headline-md text-brand-crimson leading-tight">$325.00</span>
+<span class="font-label-sm text-label-sm text-on-surface/50">(12 Users)</span>
+</div>
+</div>
+</div>
+<!-- Quick Top Terminal Status & Notifications -->
+<div class="flex items-center gap-2">
+<button class="w-9 h-9 rounded bg-surface-card border border-border-subtle hover:bg-surface-elevated text-on-surface/70 hover:text-on-surface flex items-center justify-center relative transition-colors">
+<span class="material-symbols-outlined text-headline-sm" data-icon="notifications">notifications</span>
+<span class="w-2 h-2 rounded-full bg-brand-crimson absolute top-2 right-2"></span>
+</button>
+<div class="h-6 w-[1px] bg-border-subtle mx-1"></div>
+<div class="flex items-center gap-2 bg-surface-card border border-border-subtle px-3 py-1.5 rounded">
+<div class="w-2 h-2 rounded-full bg-status-active animate-pulse"></div>
+<span class="font-label-sm text-label-sm text-on-surface/80 uppercase tracking-wide">LAN: 10 Gbps</span>
+</div>
+</div>
+</header>
+<!-- SPLIT MAIN WORKSPACE: MONITORING GRID (LEFT) + INTEGRATED POS (RIGHT) -->
+<div class="flex-1 flex overflow-hidden">
+<!-- 3. MAIN LIVE STATION MONITORING VIEW -->
+<main class="flex-1 flex flex-col min-w-0 border-r border-border-subtle overflow-hidden">
+<!-- Station Filter Toolbar -->
+<div class="h-14 bg-surface-base/80 backdrop-blur px-margin-lg border-b border-border-subtle flex items-center justify-between shrink-0">
+<!-- Segmented Category Filters -->
+<div class="flex items-center gap-1.5 p-1 bg-surface-card rounded border border-border-subtle">
+<button class="px-3 py-1 rounded bg-surface-elevated text-brand-crimson font-label-sm text-label-sm uppercase tracking-wider flex items-center gap-1.5 shadow-sm border border-brand-crimson/30">
+<span>All Stations</span>
+<span class="px-1.5 py-0.2 bg-brand-crimson text-white rounded text-[10px]">38</span>
+</button>
+<button class="px-3 py-1 rounded hover:bg-surface-elevated text-on-surface/70 hover:text-on-surface font-label-sm text-label-sm uppercase tracking-wider flex items-center gap-1.5 transition-colors">
+<span class="w-2 h-2 rounded-full bg-brand-crimson"></span>
+<span>Active</span>
+<span class="text-on-surface/40">18</span>
+</button>
+<button class="px-3 py-1 rounded hover:bg-surface-elevated text-on-surface/70 hover:text-on-surface font-label-sm text-label-sm uppercase tracking-wider flex items-center gap-1.5 transition-colors">
+<span class="w-2 h-2 rounded-full bg-status-active"></span>
+<span>Available</span>
+<span class="text-on-surface/40">16</span>
+</button>
+<button class="px-3 py-1 rounded hover:bg-surface-elevated text-on-surface/70 hover:text-on-surface font-label-sm text-label-sm uppercase tracking-wider flex items-center gap-1.5 transition-colors">
+<span class="w-2 h-2 rounded-full bg-status-reserved"></span>
+<span>Reserved</span>
+<span class="text-on-surface/40">2</span>
+</button>
+<button class="px-3 py-1 rounded hover:bg-surface-elevated text-on-surface/70 hover:text-on-surface font-label-sm text-label-sm uppercase tracking-wider flex items-center gap-1.5 transition-colors">
+<span class="w-2 h-2 rounded-full bg-status-maintenance"></span>
+<span>Maintenance</span>
+<span class="text-on-surface/40">2</span>
+</button>
+</div>
+<!-- View Modes & Bulk Controls -->
+<div class="flex items-center gap-2">
+<div class="flex items-center bg-surface-card rounded border border-border-subtle p-0.5">
+<button class="p-1 rounded bg-surface-elevated text-on-surface text-sm flex items-center justify-center">
+<span class="material-symbols-outlined text-lg" data-icon="grid_view">grid_view</span>
+</button>
+<button class="p-1 rounded text-on-surface/40 hover:text-on-surface text-sm flex items-center justify-center">
+<span class="material-symbols-outlined text-lg" data-icon="view_list">view_list</span>
+</button>
+</div>
+<button class="flex items-center gap-1.5 px-3 py-1.5 bg-surface-card hover:bg-surface-elevated border border-border-subtle rounded text-on-surface font-label-sm text-label-sm uppercase tracking-wider">
+<span class="material-symbols-outlined text-sm" data-icon="tune">tune</span>
+<span>Floor Map View</span>
+</button>
+</div>
+</div>
+<!-- Live Station Telemetry Grid -->
+<div class="flex-1 overflow-y-auto p-margin-lg">
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-gutter-lg">
+<!-- STATION 1: PC 01 [PLAYING - ACTIVE] -->
+<div class="bg-surface-card rounded border border-brand-crimson/50 glow-active surface-top-edge p-space-md flex flex-col justify-between relative overflow-hidden transition-all duration-200">
+<!-- Hairline Top Bar for Active Session -->
+<div class="absolute top-0 left-0 right-0 h-[2px] bg-brand-crimson"></div>
+<div>
+<!-- Header ID & Game Spec -->
+<div class="flex items-start justify-between pb-space-sm border-b border-border-subtle">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 bg-brand-crimson/20 border border-brand-crimson/40 text-brand-crimson font-headline-sm text-headline-sm rounded font-bold tracking-tight">PC-01</span>
+<div>
+<div class="font-label-sm text-label-sm text-on-surface/40 uppercase tracking-wider">STAGE PRO RIG</div>
+<div class="font-label-sm text-label-sm text-on-surface/80">RTX 4090 // 360Hz</div>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded bg-brand-crimson/20 text-brand-crimson border border-brand-crimson/40 font-label-sm text-label-sm uppercase font-bold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-brand-crimson animate-pulse"></span>
+                      PLAYING
+                    </span>
+</div>
+<!-- Gamer Handle & Telemetry Payload -->
+<div class="py-space-md flex items-center justify-between">
+<div>
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">Ahmad S.</span>
+<span class="px-1.5 py-0.2 bg-surface-elevated border border-border-subtle rounded text-[11px] text-brand-crimson font-mono">VIP</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface/60 font-body-sm text-body-sm mt-1">
+<span class="material-symbols-outlined text-base text-primary-container" data-icon="sports_esports">sports_esports</span>
+<span>Valorant • Started 18:42</span>
+</div>
+</div>
+<!-- Big Countdown Clock -->
+<div class="text-right">
+<div class="font-label-sm text-label-sm text-on-surface/40 uppercase tracking-widest">Elapsed Time</div>
+<div class="font-telemetry-num text-headline-md text-brand-crimson font-mono tracking-tight">01:24:32</div>
+</div>
+</div>
+<!-- Accrued Charges Sub-card -->
+<div class="bg-surface-elevated/70 rounded p-2 border border-border-subtle flex items-center justify-between mb-space-md">
+<span class="text-body-sm font-body-sm text-on-surface/70">Session Accrued:</span>
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface font-mono font-bold">$4.50</span>
+<span class="text-[10px] text-status-active bg-status-active/10 px-1 py-0.2 rounded border border-status-active/20">UNPAID</span>
+</div>
+</div>
+</div>
+<!-- Action Rail (Quick Operations) -->
+<div class="grid grid-cols-4 gap-1.5 pt-2 border-t border-border-subtle">
+<button class="py-1.5 px-2 bg-surface-elevated hover:bg-surface-container-high rounded text-on-surface text-label-sm font-label-sm flex items-center justify-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="more_time">more_time</span>
+<span>Extend</span>
+</button>
+<button class="py-1.5 px-2 bg-brand-crimson/15 hover:bg-brand-crimson/30 border border-brand-crimson/40 text-brand-crimson rounded text-label-sm font-label-sm flex items-center justify-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="fastfood">fastfood</span>
+<span>+F&amp;B</span>
+</button>
+<button class="py-1.5 px-2 bg-surface-elevated hover:bg-surface-container-high rounded text-on-surface text-label-sm font-label-sm flex items-center justify-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="swap_horiz">swap_horiz</span>
+<span>Move</span>
+</button>
+<button class="py-1.5 px-2 bg-error-container/40 hover:bg-error-container border border-error/20 text-error rounded text-label-sm font-label-sm flex items-center justify-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="power_settings_new">power_settings_new</span>
+<span>End</span>
+</button>
+</div>
+</div>
+<!-- STATION 2: PC 02 [AVAILABLE] -->
+<div class="bg-surface-card rounded border border-status-active/40 glow-available surface-top-edge p-space-md flex flex-col justify-between relative overflow-hidden transition-all duration-200">
+<div class="absolute top-0 left-0 right-0 h-[2px] bg-status-active"></div>
+<div>
+<div class="flex items-start justify-between pb-space-sm border-b border-border-subtle">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 bg-status-active/10 border border-status-active/30 text-status-active font-headline-sm text-headline-sm rounded font-bold tracking-tight">PC-02</span>
+<div>
+<div class="font-label-sm text-label-sm text-on-surface/40 uppercase tracking-wider">COMPETITIVE POD</div>
+<div class="font-label-sm text-label-sm text-on-surface/80">RTX 4080 // 240Hz</div>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded bg-status-active/15 text-status-active border border-status-active/30 font-label-sm text-label-sm uppercase font-bold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-status-active"></span>
+                      AVAILABLE
+                    </span>
+</div>
+<div class="py-space-lg flex flex-col items-center justify-center text-center">
+<div class="w-12 h-12 rounded-full bg-surface-elevated border border-border-subtle flex items-center justify-center text-status-active mb-2">
+<span class="material-symbols-outlined text-2xl" data-icon="check_circle">check_circle</span>
+</div>
+<div class="font-headline-sm text-headline-sm text-on-surface font-semibold">Station Clean &amp; Idle</div>
+<div class="font-body-sm text-body-sm text-on-surface/40 mt-0.5">Sanitized at 18:30 • All peripherals synced</div>
+</div>
+</div>
+<!-- Action: Direct Start Session -->
+<div class="pt-2 border-t border-border-subtle">
+<button class="w-full py-2 bg-surface-elevated hover:bg-status-active hover:text-surface-base text-status-active border border-status-active/40 rounded font-label-md text-label-md uppercase tracking-wider transition-all duration-150 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-base" data-icon="play_arrow">play_arrow</span>
+<span>Start Quick Session</span>
+</button>
+</div>
+</div>
+<!-- STATION 3: PC 03 [PLAYING - COMPLEX TOTALS] -->
+<div class="bg-surface-card rounded border border-brand-crimson/50 glow-active surface-top-edge p-space-md flex flex-col justify-between relative overflow-hidden transition-all duration-200">
+<div class="absolute top-0 left-0 right-0 h-[2px] bg-brand-crimson"></div>
+<div>
+<div class="flex items-start justify-between pb-space-sm border-b border-border-subtle">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 bg-brand-crimson/20 border border-brand-crimson/40 text-brand-crimson font-headline-sm text-headline-sm rounded font-bold tracking-tight">PC-03</span>
+<div>
+<div class="font-label-sm text-label-sm text-on-surface/40 uppercase tracking-wider">COMPETITIVE POD</div>
+<div class="font-label-sm text-label-sm text-on-surface/80">RTX 4080 // 240Hz</div>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded bg-brand-crimson/20 text-brand-crimson border border-brand-crimson/40 font-label-sm text-label-sm uppercase font-bold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-brand-crimson animate-pulse"></span>
+                      PLAYING
+                    </span>
+</div>
+<div class="py-space-md flex items-center justify-between">
+<div>
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">Marcus K.</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface/60 font-body-sm text-body-sm mt-1">
+<span class="material-symbols-outlined text-base text-brand-crimson" data-icon="sports_esports">sports_esports</span>
+<span>Apex Legends</span>
+</div>
+</div>
+<div class="text-right">
+<div class="font-label-sm text-label-sm text-on-surface/40 uppercase tracking-widest">Elapsed Time</div>
+<div class="font-telemetry-num text-headline-md text-brand-crimson font-mono tracking-tight">00:54:10</div>
+</div>
+</div>
+<!-- Multi-line Financial Breakdown -->
+<div class="bg-surface-elevated/70 rounded p-2 border border-border-subtle flex flex-col gap-1 mb-space-md">
+<div class="flex justify-between text-body-sm font-body-sm text-on-surface/60">
+<span>PC Time (00:54m):</span>
+<span class="font-mono">$3.00</span>
+</div>
+<div class="flex justify-between text-body-sm font-body-sm text-on-surface/60">
+<span>F&amp;B (Red Bull, Doritos):</span>
+<span class="font-mono text-tertiary">+$4.50</span>
+</div>
+<div class="border-t border-border-subtle pt-1 flex justify-between items-baseline">
+<span class="font-label-sm text-label-sm text-on-surface uppercase font-semibold">Total Session Debt:</span>
+<span class="font-headline-sm text-headline-sm text-brand-crimson font-mono font-bold">$7.50</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-4 gap-1.5 pt-2 border-t border-border-subtle">
+<button class="py-1.5 px-2 bg-surface-elevated hover:bg-surface-container-high rounded text-on-surface text-label-sm font-label-sm flex items-center justify-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="more_time">more_time</span>
+<span>Extend</span>
+</button>
+<button class="py-1.5 px-2 bg-brand-crimson/15 hover:bg-brand-crimson/30 border border-brand-crimson/40 text-brand-crimson rounded text-label-sm font-label-sm flex items-center justify-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="fastfood">fastfood</span>
+<span>+F&amp;B</span>
+</button>
+<button class="py-1.5 px-2 bg-surface-elevated hover:bg-surface-container-high rounded text-on-surface text-label-sm font-label-sm flex items-center justify-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="receipt_long">receipt_long</span>
+<span>Bill</span>
+</button>
+<button class="py-1.5 px-2 bg-error-container/40 hover:bg-error-container border border-error/20 text-error rounded text-label-sm font-label-sm flex items-center justify-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="power_settings_new">power_settings_new</span>
+<span>End</span>
+</button>
+</div>
+</div>
+<!-- STATION 4: PC 04 [MAINTENANCE] -->
+<div class="bg-surface-card/80 rounded border border-status-maintenance/40 surface-top-edge p-space-md flex flex-col justify-between relative overflow-hidden">
+<div class="absolute top-0 left-0 right-0 h-[2px] bg-status-maintenance"></div>
+<div>
+<div class="flex items-start justify-between pb-space-sm border-b border-border-subtle">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 bg-status-maintenance/15 border border-status-maintenance/30 text-status-maintenance font-headline-sm text-headline-sm rounded font-bold tracking-tight">PC-04</span>
+<div>
+<div class="font-label-sm text-label-sm text-on-surface/40 uppercase tracking-wider">BOOTCAMP RIG</div>
+<div class="font-label-sm text-label-sm text-on-surface/80">RTX 4070 Ti // 240Hz</div>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded bg-status-maintenance/15 text-status-maintenance border border-status-maintenance/30 font-label-sm text-label-sm uppercase font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-xs animate-spin" data-icon="sync">sync</span>
+                      MAINTENANCE
+                    </span>
+</div>
+<div class="py-space-lg flex flex-col items-center justify-center text-center">
+<div class="w-12 h-12 rounded-full bg-status-maintenance/10 border border-status-maintenance/30 flex items-center justify-center text-status-maintenance mb-2">
+<span class="material-symbols-outlined text-2xl" data-icon="build">build</span>
+</div>
+<div class="font-headline-sm text-headline-sm text-on-surface font-semibold">Benchmarking / Driver Update</div>
+<div class="font-body-sm text-body-sm text-on-surface/50 mt-0.5">NVIDIA 560.81 Installation • 72% done</div>
+</div>
+</div>
+<div class="pt-2 border-t border-border-subtle flex gap-2">
+<button class="flex-1 py-2 bg-surface-elevated hover:bg-surface-container-high border border-border-subtle rounded font-label-sm text-label-sm uppercase tracking-wider text-on-surface flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="terminal">terminal</span>
+<span>Logs</span>
+</button>
+<button class="flex-1 py-2 bg-status-active/20 hover:bg-status-active hover:text-surface-base text-status-active border border-status-active/40 rounded font-label-sm text-label-sm uppercase tracking-wider flex items-center justify-center gap-1 transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="verified">verified</span>
+<span>Mark Ready</span>
+</button>
+</div>
+</div>
+<!-- STATION 5: PS5 #01 [AVAILABLE] -->
+<div class="bg-surface-card rounded border border-status-active/40 glow-available surface-top-edge p-space-md flex flex-col justify-between relative overflow-hidden transition-all duration-200">
+<div class="absolute top-0 left-0 right-0 h-[2px] bg-status-active"></div>
+<div>
+<div class="flex items-start justify-between pb-space-sm border-b border-border-subtle">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 bg-surface-elevated border border-border-subtle text-secondary font-headline-sm text-headline-sm rounded font-bold tracking-tight">PS5-01</span>
+<div>
+<div class="font-label-sm text-label-sm text-on-surface/40 uppercase tracking-wider">CONSOLE LOUNGE A</div>
+<div class="font-label-sm text-label-sm text-on-surface/80">65" LG OLED C3 120Hz</div>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded bg-status-active/15 text-status-active border border-status-active/30 font-label-sm text-label-sm uppercase font-bold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-status-active"></span>
+                      AVAILABLE
+                    </span>
+</div>
+<div class="py-space-md flex flex-col gap-2">
+<div class="flex items-center justify-between text-body-sm font-body-sm text-on-surface/70">
+<span>Controllers Ready:</span>
+<div class="flex items-center gap-1 text-status-active">
+<span class="material-symbols-outlined text-sm" data-icon="sports_esports">sports_esports</span>
+<span>4x DualSense (100% Bat)</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-body-sm font-body-sm text-on-surface/70">
+<span>Rate:</span>
+<span class="font-mono text-on-surface font-semibold">$5.00 / hr (Multiplayer)</span>
+</div>
+</div>
+</div>
+<div class="pt-2 border-t border-border-subtle flex gap-2">
+<button class="flex-1 py-2 bg-secondary-container hover:bg-secondary text-on-surface rounded font-label-sm text-label-sm uppercase tracking-wider flex items-center justify-center gap-1 transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="person_add">person_add</span>
+<span>Launch 2P/4P Session</span>
+</button>
+</div>
+</div>
+<!-- STATION 6: PS5 #02 [PLAYING - MULTIPLAYER] -->
+<div class="bg-surface-card rounded border border-brand-crimson/50 glow-active surface-top-edge p-space-md flex flex-col justify-between relative overflow-hidden transition-all duration-200">
+<div class="absolute top-0 left-0 right-0 h-[2px] bg-brand-crimson"></div>
+<div>
+<div class="flex items-start justify-between pb-space-sm border-b border-border-subtle">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 bg-brand-crimson/20 border border-brand-crimson/40 text-brand-crimson font-headline-sm text-headline-sm rounded font-bold tracking-tight">PS5-02</span>
+<div>
+<div class="font-label-sm text-label-sm text-on-surface/40 uppercase tracking-wider">CONSOLE LOUNGE B</div>
+<div class="font-label-sm text-label-sm text-on-surface/80">75" Sony Bravia XR</div>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded bg-brand-crimson/20 text-brand-crimson border border-brand-crimson/40 font-label-sm text-label-sm uppercase font-bold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-brand-crimson animate-pulse"></span>
+                      PLAYING
+                    </span>
+</div>
+<div class="py-space-md flex items-center justify-between">
+<div>
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">Ali &amp; Youssef</span>
+<span class="px-1.5 py-0.2 bg-surface-elevated text-secondary font-label-sm text-label-sm rounded font-semibold">2 PLAYERS</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface/60 font-body-sm text-body-sm mt-1">
+<span class="material-symbols-outlined text-base text-brand-crimson" data-icon="sports_soccer">sports_soccer</span>
+<span>EA FC 26</span>
+</div>
+</div>
+<div class="text-right">
+<div class="font-label-sm text-label-sm text-on-surface/40 uppercase tracking-widest">Elapsed Time</div>
+<div class="font-telemetry-num text-headline-md text-brand-crimson font-mono tracking-tight">00:45:22</div>
+</div>
+</div>
+<div class="bg-surface-elevated/70 rounded p-2 border border-border-subtle flex items-center justify-between mb-space-md">
+<span class="text-body-sm font-body-sm text-on-surface/70">Multi-player Time:</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-mono font-bold">$3.75</span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-1.5 pt-2 border-t border-border-subtle">
+<button class="py-1.5 px-2 bg-surface-elevated hover:bg-surface-container-high rounded text-on-surface text-label-sm font-label-sm flex items-center justify-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="more_time">more_time</span>
+<span>Extend</span>
+</button>
+<button class="py-1.5 px-2 bg-brand-crimson/15 hover:bg-brand-crimson/30 border border-brand-crimson/40 text-brand-crimson rounded text-label-sm font-label-sm flex items-center justify-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="fastfood">fastfood</span>
+<span>Order F&amp;B</span>
+</button>
+<button class="py-1.5 px-2 bg-error-container/40 hover:bg-error-container border border-error/20 text-error rounded text-label-sm font-label-sm flex items-center justify-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="stop_circle">stop_circle</span>
+<span>End</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- 4. INTEGRATED FAST POS & ACTIVE SESSION DRAWER (RIGHT PANEL) -->
+<aside class="w-[410px] bg-surface-base flex flex-col justify-between shrink-0 overflow-hidden z-20">
+<!-- Top POS Header & Ticket Selector -->
+<div class="p-space-md border-b border-border-subtle flex flex-col gap-space-sm bg-surface-base">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-brand-crimson text-headline-sm" data-icon="point_of_sale">point_of_sale</span>
+<span class="font-headline-sm text-headline-sm uppercase tracking-wider text-on-surface">Fast POS Terminal</span>
+</div>
+<span class="px-2 py-0.5 bg-surface-elevated rounded border border-border-subtle font-label-sm text-label-sm text-on-surface/60">TICKET #4192</span>
+</div>
+<!-- Target Session Selector -->
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm text-on-surface/40 uppercase">Bill To:</span>
+<div class="flex-1 relative">
+<select class="w-full bg-surface-card border border-border-subtle hover:border-brand-crimson rounded px-2.5 py-1.5 text-on-surface text-body-sm font-body-sm appearance-none outline-none pr-8 cursor-pointer">
+<option selected="">PC-01 — Ahmad S. (Active Session)</option>
+<option>PC-03 — Marcus K. (Active Session)</option>
+<option>PS5-02 — Ali &amp; Youssef (Active Session)</option>
+<option>-- Walk-In Cash Customer --</option>
+<option>-- Charge to House / Promo --</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 text-on-surface/40 pointer-events-none text-sm" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<!-- Quick Item Categories -->
+<div class="flex items-center gap-1 overflow-x-auto pt-1 pb-1">
+<button class="px-2.5 py-1 rounded bg-brand-crimson text-white font-label-sm text-label-sm uppercase tracking-wider shrink-0">All Items</button>
+<button class="px-2.5 py-1 rounded bg-surface-card hover:bg-surface-elevated text-on-surface/70 font-label-sm text-label-sm uppercase tracking-wider shrink-0">Drinks</button>
+<button class="px-2.5 py-1 rounded bg-surface-card hover:bg-surface-elevated text-on-surface/70 font-label-sm text-label-sm uppercase tracking-wider shrink-0">Snacks</button>
+<button class="px-2.5 py-1 rounded bg-surface-card hover:bg-surface-elevated text-on-surface/70 font-label-sm text-label-sm uppercase tracking-wider shrink-0">Hot Meals</button>
+<button class="px-2.5 py-1 rounded bg-surface-card hover:bg-surface-elevated text-on-surface/70 font-label-sm text-label-sm uppercase tracking-wider shrink-0">Hardware</button>
+</div>
+</div>
+<!-- Quick Tap Product Catalog Grid -->
+<div class="p-space-md border-b border-border-subtle overflow-y-auto max-h-48 bg-surface-card/40">
+<div class="grid grid-cols-3 gap-2">
+<!-- Product 1 -->
+<button class="bg-surface-card hover:bg-surface-elevated border border-border-subtle hover:border-brand-crimson/50 rounded p-2 text-left flex flex-col justify-between transition-all duration-150 active:scale-95 group">
+<span class="font-label-sm text-label-sm text-on-surface group-hover:text-brand-crimson line-clamp-1">Red Bull Zero</span>
+<span class="font-telemetry-num text-label-md text-on-surface/80 font-mono mt-1">$3.50</span>
+</button>
+<!-- Product 2 -->
+<button class="bg-surface-card hover:bg-surface-elevated border border-border-subtle hover:border-brand-crimson/50 rounded p-2 text-left flex flex-col justify-between transition-all duration-150 active:scale-95 group">
+<span class="font-label-sm text-label-sm text-on-surface group-hover:text-brand-crimson line-clamp-1">Monster Ultra</span>
+<span class="font-telemetry-num text-label-md text-on-surface/80 font-mono mt-1">$3.00</span>
+</button>
+<!-- Product 3 -->
+<button class="bg-surface-card hover:bg-surface-elevated border border-border-subtle hover:border-brand-crimson/50 rounded p-2 text-left flex flex-col justify-between transition-all duration-150 active:scale-95 group">
+<span class="font-label-sm text-label-sm text-on-surface group-hover:text-brand-crimson line-clamp-1">Cheetos Flamin'</span>
+<span class="font-telemetry-num text-label-md text-on-surface/80 font-mono mt-1">$1.50</span>
+</button>
+<!-- Product 4 -->
+<button class="bg-surface-card hover:bg-surface-elevated border border-border-subtle hover:border-brand-crimson/50 rounded p-2 text-left flex flex-col justify-between transition-all duration-150 active:scale-95 group">
+<span class="font-label-sm text-label-sm text-on-surface group-hover:text-brand-crimson line-clamp-1">Gamer Burger</span>
+<span class="font-telemetry-num text-label-md text-on-surface/80 font-mono mt-1">$8.00</span>
+</button>
+<!-- Product 5 -->
+<button class="bg-surface-card hover:bg-surface-elevated border border-border-subtle hover:border-brand-crimson/50 rounded p-2 text-left flex flex-col justify-between transition-all duration-150 active:scale-95 group">
+<span class="font-label-sm text-label-sm text-on-surface group-hover:text-brand-crimson line-clamp-1">USB-C Cable 2M</span>
+<span class="font-telemetry-num text-label-md text-on-surface/80 font-mono mt-1">$9.99</span>
+</button>
+<!-- Product 6: Manual Add -->
+<button class="bg-surface-elevated hover:bg-surface-container-high border border-dashed border-border-subtle rounded p-2 text-center flex flex-col items-center justify-center text-on-surface/50 hover:text-on-surface transition-all">
+<span class="material-symbols-outlined text-base" data-icon="add_circle">add_circle</span>
+<span class="font-label-sm text-[10px] mt-0.5">Custom Item</span>
+</button>
+</div>
+</div>
+<!-- Current Order Ticket Breakdown -->
+<div class="flex-1 flex flex-col justify-between p-space-md overflow-y-auto bg-surface-base">
+<div>
+<div class="flex items-center justify-between pb-2 border-b border-border-subtle mb-space-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface/50">Current Itemized Bill</span>
+<button class="text-[11px] text-error hover:underline flex items-center gap-0.5">
+<span class="material-symbols-outlined text-xs" data-icon="delete_sweep">delete_sweep</span>
+<span>Clear All</span>
+</button>
+</div>
+<!-- Ticket Items Stack -->
+<div class="flex flex-col gap-2">
+<!-- Session Time Item -->
+<div class="flex items-center justify-between p-2 bg-surface-card rounded border border-border-subtle">
+<div class="flex items-center gap-2">
+<span class="w-6 h-6 rounded bg-brand-crimson/20 text-brand-crimson flex items-center justify-center text-xs">
+<span class="material-symbols-outlined text-xs" data-icon="timer">timer</span>
+</span>
+<div>
+<div class="font-label-md text-label-md text-on-surface">Gaming Time (01:24:32)</div>
+<div class="font-body-sm text-body-sm text-on-surface/40">Tier 1 Stage Rig • $3.00/hr</div>
+</div>
+</div>
+<div class="text-right font-mono font-bold text-on-surface">$4.50</div>
+</div>
+<!-- Red Bull Zero -->
+<div class="flex items-center justify-between p-2 bg-surface-card rounded border border-border-subtle">
+<div class="flex items-center gap-2">
+<span class="w-6 h-6 rounded bg-surface-elevated text-on-surface/80 flex items-center justify-center text-xs font-mono font-bold">1x</span>
+<div>
+<div class="font-label-md text-label-md text-on-surface">Red Bull Zero (250ml)</div>
+<div class="font-body-sm text-body-sm text-on-surface/40">F&amp;B Order #819</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-mono font-bold text-on-surface">$3.50</span>
+<button class="text-on-surface/30 hover:text-error text-xs">✕</button>
+</div>
+</div>
+<!-- Flamin Hot Cheetos -->
+<div class="flex items-center justify-between p-2 bg-surface-card rounded border border-border-subtle">
+<div class="flex items-center gap-2">
+<span class="w-6 h-6 rounded bg-surface-elevated text-on-surface/80 flex items-center justify-center text-xs font-mono font-bold">1x</span>
+<div>
+<div class="font-label-md text-label-md text-on-surface">Flamin' Hot Cheetos (Big Bag)</div>
+<div class="font-body-sm text-body-sm text-on-surface/40">Snack bar</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-mono font-bold text-on-surface">$1.50</span>
+<button class="text-on-surface/30 hover:text-error text-xs">✕</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Financial Subtotal & Tender Strip -->
+<div class="pt-space-md border-t border-border-subtle mt-2 flex flex-col gap-space-sm">
+<div class="flex flex-col gap-1 text-body-sm font-body-sm">
+<div class="flex justify-between text-on-surface/60">
+<span>Subtotal</span>
+<span class="font-mono">$9.50</span>
+</div>
+<div class="flex justify-between text-on-surface/60">
+<span>Arena Tax (0.00%)</span>
+<span class="font-mono">$0.00</span>
+</div>
+<div class="flex justify-between items-baseline pt-1 border-t border-border-subtle text-headline-sm font-headline-sm">
+<span class="text-on-surface uppercase tracking-wider font-bold">Total Amount Due</span>
+<span class="text-brand-crimson font-telemetry-num text-headline-md font-mono">$9.50</span>
+</div>
+</div>
+<!-- Tender Buttons -->
+<div class="grid grid-cols-3 gap-1.5 pt-1">
+<button class="py-2 bg-surface-card hover:bg-surface-elevated border border-border-subtle rounded flex flex-col items-center justify-center transition-colors">
+<span class="font-label-sm text-label-sm uppercase font-bold text-on-surface">CASH</span>
+<span class="text-[10px] text-on-surface/40 font-mono">$10 / $20 / Exact</span>
+</button>
+<button class="py-2 bg-surface-card hover:bg-surface-elevated border border-border-subtle rounded flex flex-col items-center justify-center transition-colors">
+<span class="font-label-sm text-label-sm uppercase font-bold text-on-surface">CARD TAP</span>
+<span class="text-[10px] text-status-active font-mono">NFC Ready</span>
+</button>
+<button class="py-2 bg-surface-card hover:bg-surface-elevated border border-brand-crimson/30 text-brand-crimson rounded flex flex-col items-center justify-center transition-colors">
+<span class="font-label-sm text-label-sm uppercase font-bold">DEBT ACCOUNT</span>
+<span class="text-[10px] text-brand-crimson/60 font-mono">Add to Tab</span>
+</button>
+</div>
+<!-- Final Action Button -->
+<div class="flex gap-2 pt-1">
+<button class="flex-1 py-3 bg-brand-crimson hover:bg-brand-crimson-dark text-white rounded font-label-md text-label-md uppercase tracking-wider font-bold transition-all duration-150 flex items-center justify-center gap-2 glow-crimson-btn active:scale-98">
+<span class="material-symbols-outlined text-lg" data-icon="check_circle">check_circle</span>
+<span>Complete &amp; Add to Session</span>
+</button>
+<button class="px-3 bg-surface-card hover:bg-surface-elevated border border-border-subtle text-on-surface/70 hover:text-on-surface rounded flex items-center justify-center transition-colors" title="Print Receipt">
+<span class="material-symbols-outlined text-lg" data-icon="print">print</span>
+</button>
+</div>
+</div>
+</div>
+</aside>
+</div>
+<!-- 5. BOTTOM QUICK TELEMETRY & AUDIT TICKER STRIP -->
+<footer class="h-10 bg-surface-base border-t border-border-subtle px-margin-lg flex items-center justify-between shrink-0 text-body-sm font-body-sm">
+<!-- Live Transaction Ticker -->
+<div class="flex items-center gap-space-md overflow-hidden text-on-surface/60">
+<div class="flex items-center gap-1.5 text-brand-crimson uppercase font-label-sm text-label-sm tracking-wider shrink-0">
+<span class="material-symbols-outlined text-sm" data-icon="history">history</span>
+<span>Live Audit Feed</span>
+</div>
+<div class="flex items-center gap-4 text-xs font-mono truncate">
+<span class="text-on-surface/80">19:04:12 - PS5-02 Added 2x Monster Energy ($6.00)</span>
+<span class="text-on-surface/30">•</span>
+<span class="text-on-surface/80">19:01:45 - PC-14 Ended Session by Cashier (Paid $6.25 Cash)</span>
+<span class="text-on-surface/30">•</span>
+<span class="text-on-surface/80">18:58:20 - Customer 'ShadowRider' Created Account ($10.00 Balance loaded)</span>
+</div>
+</div>
+<!-- Network & Arena Performance Metrics -->
+<div class="flex items-center gap-space-lg shrink-0">
+<!-- Latency Gauge -->
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm text-on-surface/40 uppercase">Arena Ping:</span>
+<div class="flex items-center gap-1 font-mono font-semibold text-status-active text-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-status-active"></span>
+<span>4ms (Jitter 0.2ms)</span>
+</div>
+</div>
+<!-- Peak Forecast Indicator -->
+<div class="flex items-center gap-2 border-l border-border-subtle pl-space-md">
+<span class="font-label-sm text-label-sm text-on-surface/40 uppercase">Peak Forecast:</span>
+<span class="font-label-sm text-label-sm text-status-maintenance uppercase font-bold">20:30 (Est. 94% Full)</span>
+</div>
+<!-- Master Sync Badge -->
+<div class="flex items-center gap-1 text-[11px] text-on-surface/40 border-l border-border-subtle pl-space-md">
+<span class="material-symbols-outlined text-xs text-status-active" data-icon="cloud_done">cloud_done</span>
+<span>Cloud Sync Active</span>
+</div>
+</div>
+</footer>
+</div>
+</div>
+</body></html>
