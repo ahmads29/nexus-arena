@@ -137,7 +137,7 @@ function initStationFilters(root = document) {
       button.classList.add('active');
       const filter = button.dataset.filter;
       target.querySelectorAll('[data-station]').forEach(tile => {
-        const haystack = `${tile.dataset.status} ${tile.dataset.type} ${tile.dataset.zone} ${tile.dataset.tier}`.toLowerCase();
+        const haystack = `${tile.dataset.status} ${tile.dataset.type} ${tile.dataset.zone} ${tile.dataset.tier} ${tile.dataset.group}`.toLowerCase();
         tile.style.display = filter === 'all' || haystack.includes(filter.toLowerCase()) ? '' : 'none';
       });
     });
@@ -166,7 +166,7 @@ function stationStatusClass(status = '') {
   if (normalized === 'available') return 'status-available';
   if (normalized === 'playing' || normalized === 'paused') return 'status-playing';
   if (normalized === 'reserved') return 'status-reserved';
-  if (normalized === 'maintenance') return 'status-maintenance';
+  if (normalized === 'maintenance' || normalized === 'stale') return 'status-maintenance';
   return 'status-offline';
 }
 
@@ -174,9 +174,26 @@ function renderLiveStationTile(station, kind = 'pc') {
   const status = String(station.status || 'OFFLINE').toUpperCase();
   const type = kind === 'ps' ? (station.console_type || 'PlayStation') : (station.type_name || station.tier || 'PC');
   const zone = station.zone_name || '';
-  const game = station.current_game || (status === 'AVAILABLE' ? `${publicMoney(station.hourly_rate)}/hr` : '');
+  const mapped = station.mapped !== false && station.mapped !== 0;
+  const rate = Number(station.hourly_rate || 0);
+  const hasExternalDetails = Object.prototype.hasOwnProperty.call(station, 'username');
+  const username = String(station.username || '').trim();
+  const game = station.current_game || (status === 'AVAILABLE' ? (mapped && rate > 0 ? `${publicMoney(rate)}/hr` : 'iCafeCloud PC') : '');
   const elapsed = station.elapsed !== null && station.elapsed !== undefined ? formatDuration(Number(station.elapsed)) : '';
-  return `<div class="station-tile ${stationStatusClass(status)} surface-edge cursor-pointer" data-station data-id="${escapeHtml(station.id || '')}" data-status="${escapeHtml(status)}" data-type="${escapeHtml(type)}" data-zone="${escapeHtml(zone)}" data-tier="${escapeHtml(station.tier || type)}" data-name="${escapeHtml(station.name)}" data-rate="${escapeHtml(station.hourly_rate || '')}" data-game="${escapeHtml(game)}" data-elapsed="${escapeHtml(elapsed)}">
+  const connection = station.connection_status || '';
+  const icafeSync = station.icafe_synced || '';
+  const sessionDuration = String(station.icafe_session_duration || '').trim();
+  const timeLeft = String(station.icafe_time_left || '').trim();
+  const detailHtml = hasExternalDetails
+    ? `${username ? `
+        <div class="truncate text-white/90"><span class="label text-[9px] text-on-surface/40">User:</span> ${escapeHtml(username)}</div>
+      ` : '<div class="text-on-surface/55">No active user</div>'}
+      ${sessionDuration ? `<div class="flex justify-between gap-2 mt-2"><span class="label text-[9px] text-on-surface/40">Session</span><span class="telemetry text-white/75">${escapeHtml(sessionDuration)}</span></div>` : ''}
+      ${timeLeft ? `<div class="flex justify-between gap-2"><span class="label text-[9px] text-on-surface/40">Remaining</span><span class="telemetry text-white/75">${escapeHtml(timeLeft)}</span></div>` : ''}`
+    : `${game ? `<div class="truncate text-white/85">${escapeHtml(game)}</div>` : ''}
+      ${elapsed && status === 'PLAYING' ? `<div class="telemetry text-on-surface/55">${escapeHtml(elapsed)}</div>` : ''}
+      ${zone ? `<div class="text-on-surface/35 truncate">${escapeHtml(zone)}</div>` : ''}`;
+  return `<div class="station-tile ${stationStatusClass(status)} surface-edge cursor-pointer" data-station data-id="${escapeHtml(station.id || '')}" data-local-id="${escapeHtml(station.mapped_station_id || station.id || '')}" data-mapped="${mapped ? '1' : '0'}" data-status="${escapeHtml(status)}" data-type="${escapeHtml(type)}" data-zone="${escapeHtml(zone)}" data-tier="${escapeHtml(station.tier || type)}" data-name="${escapeHtml(station.name)}" data-rate="${escapeHtml(station.hourly_rate || '')}" data-game="${escapeHtml(game)}" data-username="${escapeHtml(username)}" data-elapsed="${escapeHtml(elapsed)}" data-connection="${escapeHtml(connection)}" data-icafe-sync="${escapeHtml(icafeSync)}" data-icafe-member="${escapeHtml(station.icafe_member_account || '')}" data-icafe-left="${escapeHtml(timeLeft)}" data-icafe-duration="${escapeHtml(sessionDuration)}" data-icafe-price="${escapeHtml(station.icafe_price_name || '')}" data-group="${escapeHtml(station.group_name || zone)}">
     <div>
       <div class="flex items-start justify-between gap-2">
         <div class="font-display text-lg font-bold text-white leading-tight">${escapeHtml(station.name)}</div>
@@ -185,9 +202,8 @@ function renderLiveStationTile(station, kind = 'pc') {
       <div class="status-text label text-[10px] uppercase tracking-[.12em] mt-1">${status === 'PLAYING' ? 'Playing' : escapeHtml(status)}</div>
     </div>
     <div class="mt-3 text-xs text-on-surface/65 min-h-[32px]">
-      ${game ? `<div class="truncate text-white/85">${escapeHtml(game)}</div>` : ''}
-      ${elapsed && status === 'PLAYING' ? `<div class="telemetry text-on-surface/55">${escapeHtml(elapsed)}</div>` : ''}
-      ${zone ? `<div class="text-on-surface/35 truncate">${escapeHtml(zone)}</div>` : ''}
+      ${detailHtml}
+      ${connection ? `<div class="label text-[9px] text-on-surface/40 mt-1">${escapeHtml(connection)}</div>` : ''}
     </div>
   </div>`;
 }
@@ -196,7 +212,7 @@ function applyCurrentStationFilter(grid) {
   const group = document.querySelector(`[data-filter-target="#${grid.id}"]`);
   const active = group?.querySelector('[data-filter].active')?.dataset.filter || 'all';
   grid.querySelectorAll('[data-station]').forEach(tile => {
-    const haystack = `${tile.dataset.status} ${tile.dataset.type} ${tile.dataset.zone} ${tile.dataset.tier}`.toLowerCase();
+    const haystack = `${tile.dataset.status} ${tile.dataset.type} ${tile.dataset.zone} ${tile.dataset.tier} ${tile.dataset.group}`.toLowerCase();
     tile.style.display = active === 'all' || haystack.includes(active.toLowerCase()) ? '' : 'none';
   });
 }

@@ -94,6 +94,13 @@ INSERT INTO settings (setting_key, setting_value) VALUES
 ('ps4_controller_rate', '0.50'),
 ('ps5_controller_rate', '1.00'),
 ('google_maps_url', '#');
+INSERT INTO settings (setting_key, setting_value) VALUES
+('icafecloud_enabled', '0'),
+('icafecloud_base_url', 'https://api.icafecloud.com'),
+('icafecloud_cafe_id', '50761'),
+('icafecloud_sync_interval_seconds', '60'),
+('icafecloud_stale_after_seconds', '120'),
+('icafecloud_status', 'DISABLED');
 
 INSERT INTO gaming_sessions (session_code, station_id, customer_id, started_by, current_game, start_time, hourly_rate, status)
 VALUES ('S-PC01-SEED', 1, 2, 1, 'Valorant', DATE_SUB(NOW(), INTERVAL 84 MINUTE), 4.50, 'ACTIVE'),

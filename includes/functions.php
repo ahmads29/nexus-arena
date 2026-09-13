@@ -173,6 +173,307 @@ function ensure_playstation_pos_schema(): void
     }
 }
 
+function normalize_icafe_pc_name(?string $name): string
+{
+    return strtoupper(trim(preg_replace('/\s+/', '', (string)$name)));
+}
+
+function icafecloud_setting(string $key, mixed $default = null): mixed
+{
+    $envKey = 'ICAFECLOUD_' . strtoupper($key);
+    $value = getenv($envKey);
+    if ($value !== false && $value !== '') {
+        return $value;
+    }
+
+    $localFile = __DIR__ . '/../config/icafecloud.local.php';
+    if (is_file($localFile)) {
+        $local = require $localFile;
+        if (is_array($local) && array_key_exists(strtolower($key), $local) && $local[strtolower($key)] !== '') {
+            return $local[strtolower($key)];
+        }
+    }
+
+    return setting('icafecloud_' . strtolower($key), $default);
+}
+
+function icafecloud_status_label(): string
+{
+    if (setting('icafecloud_enabled', '0') !== '1') {
+        return 'DISABLED';
+    }
+    $status = strtoupper((string)setting('icafecloud_status', 'DISABLED'));
+    $lastSync = setting('icafecloud_last_success_at', null);
+    $staleSeconds = max(30, (int)setting('icafecloud_stale_after_seconds', 120));
+    if ($lastSync && time() - strtotime((string)$lastSync) > $staleSeconds) {
+        return 'STALE';
+    }
+    return $status ?: 'DISABLED';
+}
+
+function ensure_icafecloud_schema(): void
+{
+    static $done = false;
+    if ($done) {
+        return;
+    }
+    $done = true;
+
+    $stationColumns = [
+        'icafe_pc_name' => 'VARCHAR(80) NULL AFTER active',
+        'icafe_pc_mac' => 'VARCHAR(120) NULL AFTER icafe_pc_name',
+        'icafe_pc_ip' => 'VARCHAR(80) NULL AFTER icafe_pc_mac',
+        'icafe_group_id' => 'VARCHAR(80) NULL AFTER icafe_pc_ip',
+        'icafe_group_name' => 'VARCHAR(120) NULL AFTER icafe_group_id',
+        'icafe_console_type' => 'VARCHAR(40) NULL AFTER icafe_group_name',
+        'icafe_enabled' => 'TINYINT(1) NULL AFTER icafe_console_type',
+        'icafe_connected' => 'TINYINT(1) NULL AFTER icafe_enabled',
+        'icafe_in_using' => 'TINYINT(1) NULL AFTER icafe_connected',
+        'icafe_member_id' => 'VARCHAR(80) NULL AFTER icafe_in_using',
+        'icafe_member_account' => 'VARCHAR(160) NULL AFTER icafe_member_id',
+        'icafe_member_balance' => 'DECIMAL(12,2) NULL AFTER icafe_member_account',
+        'icafe_member_balance_bonus' => 'DECIMAL(12,2) NULL AFTER icafe_member_balance',
+        'icafe_offer' => 'VARCHAR(160) NULL AFTER icafe_member_balance_bonus',
+        'icafe_price_name' => 'VARCHAR(160) NULL AFTER icafe_offer',
+        'icafe_connect_time' => 'VARCHAR(80) NULL AFTER icafe_price_name',
+        'icafe_disconnect_time' => 'VARCHAR(80) NULL AFTER icafe_connect_time',
+        'icafe_session_duration' => 'VARCHAR(80) NULL AFTER icafe_disconnect_time',
+        'icafe_time_left' => 'VARCHAR(80) NULL AFTER icafe_session_duration',
+        'icafe_status_total_time' => 'VARCHAR(80) NULL AFTER icafe_time_left',
+        'icafe_status_offer_time' => 'VARCHAR(80) NULL AFTER icafe_status_total_time',
+        'icafe_last_sync_at' => 'DATETIME NULL AFTER icafe_status_offer_time',
+        'icafe_sync_status' => "ENUM('SYNCED','STALE','ERROR','UNMAPPED','DISABLED') NOT NULL DEFAULT 'DISABLED' AFTER icafe_last_sync_at",
+    ];
+
+    foreach ($stationColumns as $column => $definition) {
+        $stmt = db()->query("SHOW COLUMNS FROM stations LIKE " . db()->quote($column));
+        if (!$stmt->fetch()) {
+            db()->exec("ALTER TABLE stations ADD {$column} {$definition}");
+        }
+    }
+
+    $index = db()->query("SHOW INDEX FROM stations WHERE Key_name='idx_stations_icafe_name'")->fetch();
+    if (!$index) {
+        db()->exec('CREATE INDEX idx_stations_icafe_name ON stations (icafe_pc_name)');
+    }
+
+    db()->exec("
+        CREATE TABLE IF NOT EXISTS icafecloud_pcs (
+          id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+          pc_name VARCHAR(80) NOT NULL,
+          normalized_name VARCHAR(100) NOT NULL,
+          pc_ip VARCHAR(80) NULL,
+          pc_mac VARCHAR(120) NULL,
+          pc_comment TEXT NULL,
+          pc_console_type VARCHAR(40) NULL,
+          pc_group_id VARCHAR(80) NULL,
+          pc_group_name VARCHAR(120) NULL,
+          pc_area_name VARCHAR(120) NULL,
+          pc_enabled TINYINT(1) NULL,
+          is_connected TINYINT(1) NULL,
+          pc_in_using TINYINT(1) NULL,
+          member_id VARCHAR(80) NULL,
+          member_account VARCHAR(160) NULL,
+          member_balance DECIMAL(12,2) NULL,
+          member_balance_bonus DECIMAL(12,2) NULL,
+          member_group_id VARCHAR(80) NULL,
+          member_group_name VARCHAR(120) NULL,
+          offer_in_using VARCHAR(160) NULL,
+          price_name VARCHAR(160) NULL,
+          current_game_id VARCHAR(80) NULL,
+          current_game_name VARCHAR(160) NULL,
+          current_game_class VARCHAR(160) NULL,
+          current_game_updated_at DATETIME NULL,
+          status_connect_time_local VARCHAR(80) NULL,
+          status_disconnect_time_local VARCHAR(80) NULL,
+          status_connect_time_duration VARCHAR(80) NULL,
+          status_connect_time_left VARCHAR(80) NULL,
+          status_total_time VARCHAR(80) NULL,
+          status_offer_time VARCHAR(80) NULL,
+          recent_booking TEXT NULL,
+          is_present TINYINT(1) NOT NULL DEFAULT 1,
+          sync_status ENUM('SYNCED','STALE','MISSING','ERROR') NOT NULL DEFAULT 'SYNCED',
+          last_missing_at DATETIME NULL,
+          raw_json JSON NULL,
+          last_seen_at DATETIME NOT NULL,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          UNIQUE KEY uq_icafe_pc_name (pc_name),
+          INDEX idx_icafe_normalized_name (normalized_name),
+          INDEX idx_icafe_group (pc_group_id, sync_status),
+          INDEX idx_icafe_seen (last_seen_at)
+        ) ENGINE=InnoDB
+    ");
+
+    foreach ([
+        'is_present' => 'TINYINT(1) NOT NULL DEFAULT 1 AFTER recent_booking',
+        'sync_status' => "ENUM('SYNCED','STALE','MISSING','ERROR') NOT NULL DEFAULT 'SYNCED' AFTER is_present",
+        'last_missing_at' => 'DATETIME NULL AFTER sync_status',
+        'current_game_id' => 'VARCHAR(80) NULL AFTER price_name',
+        'current_game_name' => 'VARCHAR(160) NULL AFTER current_game_id',
+        'current_game_class' => 'VARCHAR(160) NULL AFTER current_game_name',
+        'current_game_updated_at' => 'DATETIME NULL AFTER current_game_class',
+    ] as $column => $definition) {
+        $stmt = db()->query("SHOW COLUMNS FROM icafecloud_pcs LIKE " . db()->quote($column));
+        if (!$stmt->fetch()) {
+            db()->exec("ALTER TABLE icafecloud_pcs ADD {$column} {$definition}");
+        }
+    }
+
+    $groupIndex = db()->query("SHOW INDEX FROM icafecloud_pcs WHERE Key_name='idx_icafe_group'")->fetch();
+    if (!$groupIndex) {
+        db()->exec('CREATE INDEX idx_icafe_group ON icafecloud_pcs (pc_group_id, sync_status)');
+    }
+
+    db()->exec("
+        CREATE TABLE IF NOT EXISTS icafecloud_groups (
+          id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+          pc_group_id VARCHAR(80) NOT NULL,
+          pc_group_name VARCHAR(120) NOT NULL,
+          last_sync_at DATETIME NOT NULL,
+          UNIQUE KEY uq_icafe_group_id (pc_group_id)
+        ) ENGINE=InnoDB
+    ");
+
+    foreach ([
+        'icafecloud_enabled' => '0',
+        'icafecloud_base_url' => 'https://api.icafecloud.com',
+        'icafecloud_cafe_id' => '50761',
+        'icafecloud_sync_interval_seconds' => '60',
+        'icafecloud_stale_after_seconds' => '120',
+        'icafecloud_status' => 'DISABLED',
+    ] as $key => $value) {
+        if (setting($key, null) === null) {
+            save_setting($key, $value);
+        }
+    }
+}
+
+function icafecloud_is_enabled(): bool
+{
+    return setting('icafecloud_enabled', '0') === '1';
+}
+
+function icafecloud_data_is_fresh(): bool
+{
+    if (!icafecloud_is_enabled()) {
+        return false;
+    }
+    $lastSync = setting('icafecloud_last_success_at', null);
+    if (!$lastSync) {
+        return false;
+    }
+    return time() - strtotime((string)$lastSync) <= max(30, (int)setting('icafecloud_stale_after_seconds', 120));
+}
+
+function icafecloud_live_status(array $pc, ?array $station, bool $fresh): string
+{
+    if ($station && in_array($station['local_status'] ?? '', ['MAINTENANCE', 'RESERVED'], true)) {
+        return $station['local_status'];
+    }
+    if (!$fresh) {
+        return 'STALE';
+    }
+    if ((int)($pc['pc_in_using'] ?? 0) === 1) {
+        return 'PLAYING';
+    }
+    if (array_key_exists('is_connected', $pc) && $pc['is_connected'] !== null && (int)$pc['is_connected'] === 0) {
+        return 'OFFLINE';
+    }
+    return 'AVAILABLE';
+}
+
+function icafecloud_live_pc_rows(bool $admin = false): array
+{
+    $fresh = icafecloud_data_is_fresh();
+    $sql = "
+        SELECT
+            p.*,
+            g.pc_group_name discovered_group_name,
+            s.id mapped_station_id,
+            s.name mapped_station_name,
+            s.status local_status,
+            s.tier local_tier,
+            s.hourly_rate local_hourly_rate,
+            st.name local_type_name,
+            z.name local_zone_name,
+            gs.current_game local_current_game,
+            TIMESTAMPDIFF(SECOND, gs.start_time, NOW()) local_elapsed
+        FROM icafecloud_pcs p
+        LEFT JOIN icafecloud_groups g ON g.pc_group_id = p.pc_group_id
+        LEFT JOIN stations s ON p.normalized_name = REPLACE(UPPER(s.icafe_pc_name), ' ', '')
+        LEFT JOIN station_types st ON st.id=s.station_type_id
+        LEFT JOIN station_zones z ON z.id=s.station_zone_id
+        LEFT JOIN gaming_sessions gs ON gs.station_id=s.id AND gs.status IN ('ACTIVE','PAUSED')
+        WHERE p.sync_status <> 'MISSING'
+        ORDER BY COALESCE(g.pc_group_name, p.pc_group_name, p.pc_area_name, 'iCafeCloud PCs'), p.pc_name
+    ";
+    $rows = [];
+    foreach (db()->query($sql)->fetchAll() as $row) {
+        $status = icafecloud_live_status($row, $row['mapped_station_id'] ? $row : null, $fresh);
+        $group = $row['discovered_group_name'] ?: ($row['pc_group_name'] ?: ($row['pc_area_name'] ?: 'iCafeCloud PCs'));
+        $item = [
+            'id' => 'icafe-' . $row['id'],
+            'mapped' => (bool)$row['mapped_station_id'],
+            'name' => $row['pc_name'],
+            'status' => $status,
+            'tier' => $row['local_tier'] ?: ($row['pc_group_name'] ?: $group),
+            'hourly_rate' => $row['local_hourly_rate'] ?: 0,
+            'type_name' => $row['local_type_name'] ?: 'iCafeCloud PC',
+            'zone_name' => $row['local_zone_name'] ?: $group,
+            'group' => $group,
+            'group_id' => $row['pc_group_id'],
+            'group_name' => $group,
+            'current_game' => $row['local_current_game'] ?: '',
+            'elapsed' => $row['local_elapsed'],
+            'connection_status' => $row['is_connected'] === null ? 'UNKNOWN' : ((int)$row['is_connected'] === 1 ? 'ONLINE' : 'OFFLINE'),
+            'icafe_synced' => $fresh ? $row['sync_status'] : 'STALE',
+            'sync_status' => $fresh ? $row['sync_status'] : 'STALE',
+            'last_sync_at' => $row['last_seen_at'],
+        ];
+        $activeExternalUser = (int)($row['pc_in_using'] ?? 0) === 1;
+        $item += [
+            'username' => $activeExternalUser ? (string)($row['member_account'] ?: $row['member_id'] ?: '') : '',
+            'icafe_session_duration' => $activeExternalUser ? $row['status_connect_time_duration'] : null,
+            'icafe_time_left' => $activeExternalUser ? $row['status_connect_time_left'] : null,
+        ];
+        if ($admin) {
+            $item += [
+                'external_id' => (int)$row['id'],
+                'mapped_station_id' => $row['mapped_station_id'] ? (int)$row['mapped_station_id'] : null,
+                'connected' => $row['is_connected'] === null ? null : (int)$row['is_connected'],
+                'pc_in_using' => (int)($row['pc_in_using'] ?? 0),
+                'icafe_member_account' => $row['member_account'],
+                'icafe_member_id' => $row['member_id'],
+                'icafe_member_balance' => $row['member_balance'],
+                'icafe_member_balance_bonus' => $row['member_balance_bonus'],
+                'icafe_offer' => $row['offer_in_using'],
+                'icafe_price_name' => $row['price_name'],
+                'icafe_session_duration' => $row['status_connect_time_duration'],
+                'icafe_time_left' => $row['status_connect_time_left'],
+                'icafe_status_total_time' => $row['status_total_time'],
+                'icafe_status_offer_time' => $row['status_offer_time'],
+                'mapped_station_name' => $row['mapped_station_name'],
+            ];
+        }
+        $rows[] = $item;
+    }
+    return $rows;
+}
+
+function station_counts_from_rows(array $rows): array
+{
+    $counts = ['TOTAL' => 0, 'AVAILABLE' => 0, 'PLAYING' => 0, 'RESERVED' => 0, 'MAINTENANCE' => 0, 'OFFLINE' => 0, 'STALE' => 0];
+    foreach ($rows as $row) {
+        $status = strtoupper((string)($row['status'] ?? 'OFFLINE'));
+        if (!array_key_exists($status, $counts)) {
+            $counts[$status] = 0;
+        }
+        $counts[$status]++;
+        $counts['TOTAL']++;
+    }
+    return $counts;
+}
+
 function json_response(array $payload, int $status = 200): never
 {
     http_response_code($status);
@@ -216,7 +517,7 @@ function station_status_class(string $status): string
         'AVAILABLE' => 'status-available',
         'PLAYING', 'PAUSED' => 'status-playing',
         'RESERVED' => 'status-reserved',
-        'MAINTENANCE' => 'status-maintenance',
+        'MAINTENANCE', 'STALE' => 'status-maintenance',
         default => 'status-offline',
     };
 }

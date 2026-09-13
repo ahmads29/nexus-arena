@@ -8,3 +8,4 @@ require_once __DIR__ . '/permissions.php';
 require_once __DIR__ . '/csrf.php';
 
 ensure_lbp_primary_currency();
+ensure_icafecloud_schema();

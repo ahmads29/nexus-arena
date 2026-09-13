@@ -2,7 +2,7 @@ CREATE DATABASE IF NOT EXISTS gaming CHARACTER SET utf8mb4 COLLATE utf8mb4_unico
 USE gaming;
 
 SET FOREIGN_KEY_CHECKS = 0;
-DROP TABLE IF EXISTS audit_logs, settings, reservations, debt_payments, debts, payments, sale_items, sales, session_products, gaming_sessions, stock_movements, purchase_items, purchases, products, categories, suppliers, playstation_stations, stations, station_zones, station_types, customers, role_permissions, permissions, users, roles, pricing_items, games, expenses;
+DROP TABLE IF EXISTS audit_logs, settings, reservations, debt_payments, debts, payments, sale_items, sales, session_products, gaming_sessions, stock_movements, purchase_items, purchases, products, categories, suppliers, playstation_stations, icafecloud_groups, icafecloud_pcs, stations, station_zones, station_types, customers, role_permissions, permissions, users, roles, pricing_items, games, expenses;
 SET FOREIGN_KEY_CHECKS = 1;
 
 CREATE TABLE roles (
@@ -72,12 +72,89 @@ CREATE TABLE stations (
   hourly_rate DECIMAL(10,2) NOT NULL,
   specifications TEXT NULL,
   active TINYINT(1) NOT NULL DEFAULT 1,
+  icafe_pc_name VARCHAR(80) NULL,
+  icafe_pc_mac VARCHAR(120) NULL,
+  icafe_pc_ip VARCHAR(80) NULL,
+  icafe_group_id VARCHAR(80) NULL,
+  icafe_group_name VARCHAR(120) NULL,
+  icafe_console_type VARCHAR(40) NULL,
+  icafe_enabled TINYINT(1) NULL,
+  icafe_connected TINYINT(1) NULL,
+  icafe_in_using TINYINT(1) NULL,
+  icafe_member_id VARCHAR(80) NULL,
+  icafe_member_account VARCHAR(160) NULL,
+  icafe_member_balance DECIMAL(12,2) NULL,
+  icafe_member_balance_bonus DECIMAL(12,2) NULL,
+  icafe_offer VARCHAR(160) NULL,
+  icafe_price_name VARCHAR(160) NULL,
+  icafe_connect_time VARCHAR(80) NULL,
+  icafe_disconnect_time VARCHAR(80) NULL,
+  icafe_session_duration VARCHAR(80) NULL,
+  icafe_time_left VARCHAR(80) NULL,
+  icafe_status_total_time VARCHAR(80) NULL,
+  icafe_status_offer_time VARCHAR(80) NULL,
+  icafe_last_sync_at DATETIME NULL,
+  icafe_sync_status ENUM('SYNCED','STALE','ERROR','UNMAPPED','DISABLED') NOT NULL DEFAULT 'DISABLED',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT fk_stations_type FOREIGN KEY (station_type_id) REFERENCES station_types(id),
   CONSTRAINT fk_stations_zone FOREIGN KEY (station_zone_id) REFERENCES station_zones(id) ON DELETE SET NULL,
   INDEX idx_stations_status (status),
-  INDEX idx_stations_tier (tier)
+  INDEX idx_stations_tier (tier),
+  INDEX idx_stations_icafe_name (icafe_pc_name)
+) ENGINE=InnoDB;
+
+CREATE TABLE icafecloud_pcs (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  pc_name VARCHAR(80) NOT NULL,
+  normalized_name VARCHAR(100) NOT NULL,
+  pc_ip VARCHAR(80) NULL,
+  pc_mac VARCHAR(120) NULL,
+  pc_comment TEXT NULL,
+  pc_console_type VARCHAR(40) NULL,
+  pc_group_id VARCHAR(80) NULL,
+  pc_group_name VARCHAR(120) NULL,
+  pc_area_name VARCHAR(120) NULL,
+  pc_enabled TINYINT(1) NULL,
+  is_connected TINYINT(1) NULL,
+  pc_in_using TINYINT(1) NULL,
+  member_id VARCHAR(80) NULL,
+  member_account VARCHAR(160) NULL,
+  member_balance DECIMAL(12,2) NULL,
+  member_balance_bonus DECIMAL(12,2) NULL,
+  member_group_id VARCHAR(80) NULL,
+  member_group_name VARCHAR(120) NULL,
+  offer_in_using VARCHAR(160) NULL,
+  price_name VARCHAR(160) NULL,
+  current_game_id VARCHAR(80) NULL,
+  current_game_name VARCHAR(160) NULL,
+  current_game_class VARCHAR(160) NULL,
+  current_game_updated_at DATETIME NULL,
+  status_connect_time_local VARCHAR(80) NULL,
+  status_disconnect_time_local VARCHAR(80) NULL,
+  status_connect_time_duration VARCHAR(80) NULL,
+  status_connect_time_left VARCHAR(80) NULL,
+  status_total_time VARCHAR(80) NULL,
+  status_offer_time VARCHAR(80) NULL,
+  recent_booking TEXT NULL,
+  is_present TINYINT(1) NOT NULL DEFAULT 1,
+  sync_status ENUM('SYNCED','STALE','MISSING','ERROR') NOT NULL DEFAULT 'SYNCED',
+  last_missing_at DATETIME NULL,
+  raw_json JSON NULL,
+  last_seen_at DATETIME NOT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_icafe_pc_name (pc_name),
+  INDEX idx_icafe_normalized_name (normalized_name),
+  INDEX idx_icafe_group (pc_group_id, sync_status),
+  INDEX idx_icafe_seen (last_seen_at)
+) ENGINE=InnoDB;
+
+CREATE TABLE icafecloud_groups (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  pc_group_id VARCHAR(80) NOT NULL,
+  pc_group_name VARCHAR(120) NOT NULL,
+  last_sync_at DATETIME NOT NULL,
+  UNIQUE KEY uq_icafe_group_id (pc_group_id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE playstation_stations (

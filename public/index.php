@@ -3,12 +3,17 @@ require_once __DIR__ . '/../includes/bootstrap.php';
 $business = setting('business_name', 'NEXUS ARENA');
 $description = setting('business_description', 'High performance gaming stations, PlayStation lounges, fast internet, and competitive energy.');
 ensure_website_content_schema();
-$pcCounts = ['TOTAL' => 0, 'AVAILABLE' => 0, 'PLAYING' => 0, 'RESERVED' => 0, 'MAINTENANCE' => 0];
-foreach (db()->query("SELECT status, COUNT(*) count FROM stations WHERE active=1 GROUP BY status")->fetchAll() as $row) {
-    $pcCounts[$row['status']] = (int)$row['count'];
-    $pcCounts['TOTAL'] += (int)$row['count'];
+if (icafecloud_is_enabled()) {
+    $pcs = icafecloud_live_pc_rows(false);
+    $pcCounts = station_counts_from_rows($pcs);
+} else {
+    $pcCounts = ['TOTAL' => 0, 'AVAILABLE' => 0, 'PLAYING' => 0, 'RESERVED' => 0, 'MAINTENANCE' => 0, 'OFFLINE' => 0, 'STALE' => 0];
+    foreach (db()->query("SELECT status, COUNT(*) count FROM stations WHERE active=1 GROUP BY status")->fetchAll() as $row) {
+        $pcCounts[$row['status']] = (int)$row['count'];
+        $pcCounts['TOTAL'] += (int)$row['count'];
+    }
+    $pcs = db()->query("SELECT s.*, st.name type_name, z.name zone_name, gs.current_game, TIMESTAMPDIFF(SECOND, gs.start_time, NOW()) elapsed FROM stations s JOIN station_types st ON st.id=s.station_type_id LEFT JOIN station_zones z ON z.id=s.station_zone_id LEFT JOIN gaming_sessions gs ON gs.station_id=s.id AND gs.status IN ('ACTIVE','PAUSED') WHERE s.active=1 ORDER BY s.name")->fetchAll();
 }
-$pcs = db()->query("SELECT s.*, st.name type_name, z.name zone_name, gs.current_game, TIMESTAMPDIFF(SECOND, gs.start_time, NOW()) elapsed FROM stations s JOIN station_types st ON st.id=s.station_type_id LEFT JOIN station_zones z ON z.id=s.station_zone_id LEFT JOIN gaming_sessions gs ON gs.station_id=s.id AND gs.status IN ('ACTIVE','PAUSED') WHERE s.active=1 ORDER BY s.name")->fetchAll();
 $ps = db()->query("SELECT p.*, z.name zone_name, gs.current_game, TIMESTAMPDIFF(SECOND, gs.start_time, NOW()) elapsed FROM playstation_stations p LEFT JOIN station_zones z ON z.id=p.station_zone_id LEFT JOIN gaming_sessions gs ON gs.playstation_station_id=p.id AND gs.status IN ('ACTIVE','PAUSED') WHERE p.active=1 ORDER BY p.console_type,p.name")->fetchAll();
 $games = db()->query('SELECT name, image_path FROM games WHERE active=1 ORDER BY sort_order,name LIMIT 16')->fetchAll();
 $pricingItems = db()->query('SELECT title, category, price, unit FROM pricing_items WHERE active=1 ORDER BY sort_order,title')->fetchAll();

@@ -1,22 +1,41 @@
 <?php
 require_once __DIR__ . '/../includes/bootstrap.php';
+require_once __DIR__ . '/../services/IcaFeCloudSyncService.php';
 $activeNav = 'dashboard';
 $pageTitle = 'Dashboard';
 $pageDescription = 'Operational overview for today: sessions, sales, stock and outstanding balances.';
 require_permission('dashboard.view');
 
+if (setting('icafecloud_enabled', '0') === '1') {
+    try {
+        (new IcaFeCloudSyncService())->sync(false);
+    } catch (Throwable) {
+    }
+}
+
 $todayRevenue = (float)db()->query("SELECT COALESCE(SUM(total),0) FROM sales WHERE DATE(created_at)=CURDATE() AND status <> 'VOID'")->fetchColumn();
 $activeSessionCount = (int)db()->query("SELECT COUNT(*) FROM gaming_sessions WHERE status IN ('ACTIVE','PAUSED')")->fetchColumn();
-$availablePc = (int)db()->query("SELECT COUNT(*) FROM stations WHERE active=1 AND status='AVAILABLE'")->fetchColumn();
-$playingPc = (int)db()->query("SELECT COUNT(*) FROM stations WHERE active=1 AND status='PLAYING'")->fetchColumn();
+if (icafecloud_is_enabled()) {
+    $dashboardPcRows = icafecloud_live_pc_rows(false);
+    $dashboardPcCounts = station_counts_from_rows($dashboardPcRows);
+    $availablePc = (int)$dashboardPcCounts['AVAILABLE'];
+    $playingPc = (int)$dashboardPcCounts['PLAYING'];
+} else {
+    $availablePc = (int)db()->query("SELECT COUNT(*) FROM stations WHERE active=1 AND status='AVAILABLE'")->fetchColumn();
+    $playingPc = (int)db()->query("SELECT COUNT(*) FROM stations WHERE active=1 AND status='PLAYING'")->fetchColumn();
+}
 $availablePs = (int)db()->query("SELECT COUNT(*) FROM playstation_stations WHERE active=1 AND status='AVAILABLE'")->fetchColumn();
 $todaySales = (int)db()->query("SELECT COUNT(*) FROM sales WHERE DATE(created_at)=CURDATE() AND status <> 'VOID'")->fetchColumn();
 $debts = (float)db()->query("SELECT COALESCE(SUM(remaining_amount),0) FROM debts WHERE status <> 'PAID'")->fetchColumn();
 $lowStock = (int)db()->query("SELECT COUNT(*) FROM products WHERE status='ACTIVE' AND current_stock <= minimum_stock")->fetchColumn();
 
 $pcStatuses = [];
-foreach (db()->query("SELECT status, COUNT(*) total FROM stations WHERE active=1 GROUP BY status")->fetchAll() as $row) {
-    $pcStatuses[$row['status']] = (int)$row['total'];
+if (icafecloud_is_enabled()) {
+    $pcStatuses = $dashboardPcCounts ?? station_counts_from_rows(icafecloud_live_pc_rows(false));
+} else {
+    foreach (db()->query("SELECT status, COUNT(*) total FROM stations WHERE active=1 GROUP BY status")->fetchAll() as $row) {
+        $pcStatuses[$row['status']] = (int)$row['total'];
+    }
 }
 $psStatuses = [];
 foreach (db()->query("SELECT status, COUNT(*) total FROM playstation_stations WHERE active=1 GROUP BY status")->fetchAll() as $row) {
